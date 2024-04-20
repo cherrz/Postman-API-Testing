@@ -1,0 +1,370 @@
+{
+	"info": {
+		"_postman_id": "dfd16d9a-5b4d-4bce-9f3d-c0da174206ea",
+		"name": "Trello Playground",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23628126"
+	},
+	"item": [
+		{
+			"name": "Create A Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response;\r",
+							"\r",
+							"pm.test('Verify the status of the response', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    response = pm.response.json();\r",
+							"    pm.collectionVariables.set('BoardID', response[0].id);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}boards/?name={{$randomUserName}}&key={{key}}&token={{token}}",
+					"host": [
+						"{{baseURL}}boards"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{$randomUserName}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show Boards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response;\r",
+							"\r",
+							"pm.test('Verify the response status', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    response = pm.response.json();\r",
+							"    pm.collectionVariables.set('BoardID', response[0].id); //[0] is in the case if there will be more than one board created\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}members/me/boards/?key={{key}}&token={{token}}",
+					"host": [
+						"{{baseURL}}members"
+					],
+					"path": [
+						"me",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create A List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"pm.collectionVariables.set('ListID', response.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const listName = 'Testowa Lista ' + Math.floor((Math.random() * (100 - 1) + 1));\r",
+							"\r",
+							"pm.collectionVariables.set('ListName', listName);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}boards/{{BoardID}}/lists?name={{ListName}}&key={{key}}&token={{token}}",
+					"host": [
+						"{{baseURL}}boards"
+					],
+					"path": [
+						"{{BoardID}}",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{ListName}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create A Card",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cardName = 'Testowa Karta ' + Math.floor((Math.random() * (100 - 1) + 1));\r",
+							"\r",
+							"pm.collectionVariables.set('cardName', cardName);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}cards?idList={{ListID}}&key={{key}}&token={{token}}&name={{cardName}}",
+					"host": [
+						"{{baseURL}}cards"
+					],
+					"query": [
+						{
+							"key": "idList",
+							"value": "{{ListID}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "name",
+							"value": "{{cardName}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cards On Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Verify the response status', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"\r",
+							"console.log(pm.response.json()[0].name);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/boards/{{BoardID}}/cards?key={{key}}&token={{token}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"boards",
+						"{{BoardID}}",
+						"cards"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"const numberOfObjectsInResponse = Object.keys(response);\r",
+							"\r",
+							"for (let i = 0; i < numberOfObjectsInResponse; i++) {\r",
+							"    if(i = numberOfObjectsInResponse){\r",
+							"        pm.environment.set('BoardID', response[i].id);\r",
+							"    }\r",
+							"} //setting the ID of the last created Board to delete"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}boards/{{BoardID}}?key={{key}}&token={{token}}",
+					"host": [
+						"{{baseURL}}boards"
+					],
+					"path": [
+						"{{BoardID}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BoardID",
+			"value": ""
+		},
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ListName",
+			"value": ""
+		},
+		{
+			"key": "ListID",
+			"value": ""
+		},
+		{
+			"key": "CardName",
+			"value": ""
+		},
+		{
+			"key": "cardName",
+			"value": ""
+		}
+	]
+}
